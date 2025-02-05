@@ -13,15 +13,21 @@ bot = telebot.TeleBot(TOKEN)
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    markup = types.InlineKeyboardMarkup()
-    add_to_group_button = types.InlineKeyboardButton("🤖Додати бота в свій чат",callback_data="addgroup",url=add_bot_url)
-    markup.add(add_to_group_button)
-    bot.reply_to(message,"hi this is mafia bot",reply_markup=markup)
+    if message.chat.type == 'private':
+        markup = types.InlineKeyboardMarkup()
+        add_to_group_button = types.InlineKeyboardButton("🤖Додати бота в свій чат",callback_data="addgroup",url=add_bot_url)
+        markup.add(add_to_group_button)
+        bot.reply_to(message,"hi this is mafia bot",reply_markup=markup)
+    elif message.chat.type in ["group","supergroup"]:
+        bot.reply_to(message,"Привіт я бот для гри в мафію🤖")
 
 
 @bot.message_handler(func=lambda message:True)
 def echo_message(message):
     bot.reply_to(message,"не викупив")
+
+
+
 
 
 # @bot.callback_querry_handler(func=lambda call:True)
