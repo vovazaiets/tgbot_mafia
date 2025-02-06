@@ -5,6 +5,7 @@ from telebot import types
 import time
 import threading
 from types import SimpleNamespace
+import random
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
@@ -12,8 +13,11 @@ bot_username= os.getenv("username")
 add_bot_url = f"https://t.me/{bot_username}?startgroup=true"
 
 bot = telebot.TeleBot(TOKEN)
-list_users = []
+# list_users = {}
+users_id = []
 TimeRegestration = 20
+list_roles = ["Mafia","Doctor","Normis"]
+random.shuffle(list_roles)
 
 REGESTRATION = False
 GAME_STARTED = False
@@ -71,13 +75,20 @@ def start_regestration(message):
 def start_game(message):
     global REGESTRATION
     global GAME_STARTED
+    global list_roles
+    global users_id
     if REGESTRATION == True:
         REGESTRATION = False
         GAME_STARTED = True
         print(GAME_STARTED)
+        players_roles = dict(zip(list_roles,users_id))
+        print(players_roles)
+        for role,player in players_roles.items():
+            bot.send_message(player,f"You role is: {role}")
         bot.send_message(message.chat.id, "Гра розпочалась")
         with open("night01.mp4", "rb") as video:
             bot.send_video(message.chat.id, video,timeout=60,caption="🌃 Настає ніч")
+
 
     else:
         bot.delete_message(message.chat.id, message.message_id)
@@ -96,15 +107,16 @@ def callback_querry(call):
             id_user = call.from_user.id
             firstname = call.from_user.first_name
             bot.send_message(id_user,"You join to game")
-            if firstname in list_users:
+            if id_user in users_id:
                 bot.send_message(id_user,"no no no chill bro,you in game")
             else:
-                list_users.append(firstname)
+                users_id.append(id_user)
+                # list_users[id_user]=None
                 global list_players_markup
                 global messageRegestration
                 messageRegestration = update_message(message=messageRegestration,first_name=firstname)
                 bot.edit_message_text(chat_id=call.message.chat.id,message_id=call.message.message_id,text=messageRegestration,reply_markup=list_players_markup)
-                print(list_users[0])
+                # print(list_users[0])
         elif GAME_STARTED == True:
             print("pyk pyk")
        
