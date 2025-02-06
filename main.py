@@ -78,9 +78,12 @@ def callback_querry(call):
 
 @bot.message_handler(commands=['startgame'])
 def start_game(message):
-    REGESTRATION = False
-    GAME_STARTED = True
-    bot.send_message(message.chat.id, "Гра розпочалась")
+    if REGESTRATION == True:
+        REGESTRATION = False
+        GAME_STARTED = True
+        bot.send_message(message.chat.id, "Гра розпочалась")
+    else:
+        bot.reply_to(message.chat.id, ":)")
 
 
 @bot.message_handler(commands=['stop'])
