@@ -26,7 +26,7 @@ GAME_STARTED = False
 def send_welcome(message):
     if message.chat.type == 'private':
         markup = types.InlineKeyboardMarkup()
-        add_to_group_button = types.InlineKeyboardButton("🤖Додати бота в свій чат",callback_data="addgroup",url=add_bot_url)
+        add_to_group_button = types.InlineKeyboardButton("🤖Додати бота в свій чат!",callback_data="addgroup",url=add_bot_url)
         markup.add(add_to_group_button)
         bot.reply_to(message,"hi this is mafia bot",reply_markup=markup)
     elif message.chat.type in ["group","supergroup"]:
