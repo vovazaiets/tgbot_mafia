@@ -13,6 +13,7 @@ add_bot_url = f"https://t.me/{bot_username}?startgroup=true"
 
 bot = telebot.TeleBot(TOKEN)
 list_users = []
+TimeRegestration = 20
 
 REGESTRATION = False
 GAME_STARTED = False
@@ -41,6 +42,7 @@ def update_message(message,first_name):
 
 messageRegestration = f"Починається реєстрація на гру\n"
 
+
 @bot.message_handler(commands=['game'])
 def start_regestration(message):
     global REGESTRATION
@@ -57,9 +59,9 @@ def start_regestration(message):
             list_players_add = types.InlineKeyboardButton("Connect",callback_data="connectgame")
             list_players_markup.add(list_players_add)
             bot.send_message(message.chat.id,messageRegestration,reply_markup=list_players_markup)
-            timer_reg = threading.Timer(5.0,lambda: start_game(message))
+            timer_reg = threading.Timer(TimeRegestration,lambda: start_game(message))
             timer_reg.start()
-            bot.send_message(message.chat.id,"До кінця реєстрації залишилось: <time>")
+            bot.send_message(message.chat.id,f"До кінця реєстрації залишилось: {TimeRegestration} секунд")
         else:
             bot.reply_to(message,"this is command use in groups")
     elif REGESTRATION == True:
@@ -84,6 +86,9 @@ def start_game(message):
 def callback_querry(call):
     print(GAME_STARTED)
     if call.data == 'connectgame':
+        # global REGESTRATION
+        # global GAME_STARTED
+        print(GAME_STARTED)
         if GAME_STARTED == False:
             # REGESTRATION = True
             print(call.from_user.first_name)
@@ -110,6 +115,7 @@ def callback_querry(call):
 @bot.message_handler(commands=['stop'])
 def stop_game(message):
     global REGESTRATION
+    global GAME_STARTED
     if REGESTRATION == True:
         messageRegestration = f"Починається реєстрація на гру\n"
         list_users.clear()
@@ -123,8 +129,10 @@ def stop_game(message):
     elif GAME_STARTED == True:
         messageRegestration = f"Починається реєстрація на гру\n"
         list_users.clear()
-        GAME_STARTED == False
+        GAME_STARTED = False
         bot.send_message(message.chat.id, "Game canceled")
+    else:
+        print("pyk pyk")
 
 # @bot.message_handler(func=lambda message:True)
 # def echo_message(message):
