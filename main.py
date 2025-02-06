@@ -85,6 +85,8 @@ def start_game(message):
         print(players_roles)
         for role,player in players_roles.items():
             bot.send_message(player,f"You role is: {role}")
+            if role == "Mafia":
+                bot.send_message(player,f"Select user to kill: \n\n hehe")
         bot.send_message(message.chat.id, "Гра розпочалась")
         with open("night01.mp4", "rb") as video:
             bot.send_video(message.chat.id, video,timeout=60,caption="🌃 Настає ніч")
