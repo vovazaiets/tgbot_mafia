@@ -71,6 +71,20 @@ def start_regestration(message):
     elif REGESTRATION == True:
         bot.delete_message(message.chat.id, message.message_id)
 
+
+def send_message_by_id(user_id,text):
+    bot.send_message(user_id,text)
+
+
+def func_mafia(user_id,players_roles):
+    markup_mafia = types.InlineKeyboardMarkup()
+    for roles,player in players_roles.items():
+        user_info = bot.get_chat(player)
+        button = types.InlineKeyboardButton(text=f"{user_info.first_name}",callback_data=f"kill_{player}")
+        markup_mafia.add(button)
+    bot.send_message(user_id,f"You need select to kill:\n",reply_markup=markup_mafia)
+
+
 @bot.message_handler(commands=['startgame'])
 def start_game(message):
     global REGESTRATION
@@ -87,7 +101,9 @@ def start_game(message):
         for role,player in players_roles.items():
             bot.send_message(player,f"You role is: {role}")
             if role == "Mafia":
-                bot.send_message(player,f"Select user to kill: \n\n hehe")
+                # send_message_by_id(player,"SELECT")
+                # bot.send_message(player,f"Select user to kill: \n\n hehe")
+                func_mafia(player,players_roles)
         bot.send_message(message.chat.id, "Гра розпочалась")
         with open("night01.mp4", "rb") as video:
             bot.send_video(message.chat.id, video,timeout=60,caption="🌃 Настає ніч")
@@ -117,7 +133,7 @@ def callback_querry(call):
                 bot.edit_message_text(chat_id=call.message.chat.id,message_id=call.message.message_id,text=messageRegestration,reply_markup=list_players_markup)
         elif GAME_STARTED == True:
             print("pyk pyk")
-       
+
 @bot.message_handler(commands=['stop'])
 def stop_game(message):
     global REGESTRATION
