@@ -6,13 +6,13 @@ import time
 import threading
 from types import SimpleNamespace
 import random
-from config import TimeRegestration,interval,list_roles,messageRegestration
+from config import TimeRegestration,interval,list_roles,messageRegestration,chatonly_id
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
 bot_username= os.getenv("username")
 add_bot_url = f"https://t.me/{bot_username}?startgroup=true"
-
+players_roles = {}
 bot = telebot.TeleBot(TOKEN)
 users_id = []
 
@@ -63,6 +63,7 @@ def start_regestration(message):
             list_players_add = types.InlineKeyboardButton("Connect",callback_data="connectgame")
             list_players_markup.add(list_players_add)
             bot.send_message(message.chat.id,messageRegestration,reply_markup=list_players_markup)
+            print(message.chat.id)
             timer_reg = threading.Timer(TimeRegestration,lambda: start_game(message))
             timer_reg.start()
             update_timer(message, TimeRegestration)
@@ -78,15 +79,50 @@ def send_message_by_id(user_id,text):
 
 def func_mafia(user_id,players_roles):
     markup_mafia = types.InlineKeyboardMarkup()
-    for roles,player in players_roles.items():
+    for player in users_id:
         user_info = bot.get_chat(player)
         button = types.InlineKeyboardButton(text=f"{user_info.first_name}",callback_data=f"kill_{player}")
         markup_mafia.add(button)
+    button_pass = types.InlineKeyboardButton(text="Pass kill",callback_data="pass_mafia_kill")
+    markup_mafia.add(button_pass)
     bot.send_message(user_id,f"You need select to kill:\n",reply_markup=markup_mafia)
+
+
+def day(player):
+    global users_id
+    global GAME_STARTED
+    global REGESTRATION
+    list_live_user = ""
+    if player != 0:
+        users_id.pop()
+
+    if not users_id:
+        bot.send_message(chatonly_id,"GAME OVER,MAFIA WIN")
+        GAME_STARTED = False
+        REGESTRATION = False
+    else:
+        for player in users_id:
+            list_live_user += f"{bot.get_chat(player).first_name}\n"
+        bot.send_message(chatonly_id,f"LAST LIVES:\n{list_live_user}")
+        func_mafia(player,players_roles)
+
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("kill_"))
+def kill_player(call):
+    global players_roles
+    player_id = call.data.split("_")[1]
+    role = call.data.split("_")[0]
+    bot.send_message(player_id,text=f"You selected kill player {bot.get_chat(player_id).first_name}")
+    bot.send_message(chatonly_id,f"Мафія вибрала жертву")
+    # del players_roles[f'{role}']
+    day(player_id)
+
 
 
 @bot.message_handler(commands=['startgame'])
 def start_game(message):
+    global players_roles
     global REGESTRATION
     global GAME_STARTED
     global list_roles
@@ -104,6 +140,7 @@ def start_game(message):
                 # send_message_by_id(player,"SELECT")
                 # bot.send_message(player,f"Select user to kill: \n\n hehe")
                 func_mafia(player,players_roles)
+                
         bot.send_message(message.chat.id, "Гра розпочалась")
         with open("night01.mp4", "rb") as video:
             bot.send_video(message.chat.id, video,timeout=60,caption="🌃 Настає ніч")
@@ -133,6 +170,9 @@ def callback_querry(call):
                 bot.edit_message_text(chat_id=call.message.chat.id,message_id=call.message.message_id,text=messageRegestration,reply_markup=list_players_markup)
         elif GAME_STARTED == True:
             print("pyk pyk")
+    elif call.data == 'pass_mafia_kill':
+        bot.send_message(chatonly_id,"Mafia pass kill in this round")
+        day(0)
 
 @bot.message_handler(commands=['stop'])
 def stop_game(message):
