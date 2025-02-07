@@ -6,6 +6,7 @@ import time
 import threading
 from types import SimpleNamespace
 import random
+from config import TimeRegestration,interval,list_roles,messageRegestration
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
@@ -14,10 +15,6 @@ add_bot_url = f"https://t.me/{bot_username}?startgroup=true"
 
 bot = telebot.TeleBot(TOKEN)
 users_id = []
-TimeRegestration = 180
-interval = 60
-list_roles = ["Mafia","Doctor","Normis"]
-random.shuffle(list_roles)
 
 REGESTRATION = False
 GAME_STARTED = False
@@ -33,14 +30,9 @@ def send_welcome(message):
         print(GAME_STARTED)
         bot.reply_to(message,"Привіт я бот для гри в мафію🤖")
 
-
-
 def update_message(message,first_name):
     message += f"\n{first_name}"
     return message
-
-messageRegestration = f"Починається реєстрація на гру\n"
-
 
 def update_timer(message, time_left):
     global GAME_STARTED
@@ -89,6 +81,7 @@ def start_game(message):
         REGESTRATION = False
         GAME_STARTED = True
         print(GAME_STARTED)
+        random.shuffle(list_roles)
         players_roles = dict(zip(list_roles,users_id))
         print(players_roles)
         for role,player in players_roles.items():
