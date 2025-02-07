@@ -13,7 +13,6 @@ bot_username= os.getenv("username")
 add_bot_url = f"https://t.me/{bot_username}?startgroup=true"
 
 bot = telebot.TeleBot(TOKEN)
-# list_users = {}
 users_id = []
 TimeRegestration = 180
 interval = 60
@@ -39,11 +38,6 @@ def send_welcome(message):
 def update_message(message,first_name):
     message += f"\n{first_name}"
     return message
-
-# def send_start(message):
-#     # print("func work")
-#     bot.send_message(message.chat.id,"/startgame")
-# # messageRegestration = f"Починається реєстрація на гру\n"
 
 messageRegestration = f"Починається реєстрація на гру\n"
 
@@ -79,7 +73,6 @@ def start_regestration(message):
             bot.send_message(message.chat.id,messageRegestration,reply_markup=list_players_markup)
             timer_reg = threading.Timer(TimeRegestration,lambda: start_game(message))
             timer_reg.start()
-            #bot.send_message(message.chat.id,f"⏳Починається реєстрація на гру,залишилось: {TimeRegestration} секунд")
             update_timer(message, TimeRegestration)
         else:
             bot.reply_to(message,"this is command use in groups")
@@ -114,11 +107,8 @@ def start_game(message):
 def callback_querry(call):
     print(GAME_STARTED)
     if call.data == 'connectgame':
-        # global REGESTRATION
-        # global GAME_STARTED
         print(GAME_STARTED)
         if GAME_STARTED == False:
-            # REGESTRATION = True
             print(call.from_user.first_name)
             print(call.from_user.id)
             id_user = call.from_user.id
@@ -128,19 +118,13 @@ def callback_querry(call):
                 bot.send_message(id_user,"no no no chill bro,you in game")
             else:
                 users_id.append(id_user)
-                # list_users[id_user]=None
                 global list_players_markup
                 global messageRegestration
                 messageRegestration = update_message(message=messageRegestration,first_name=firstname)
                 bot.edit_message_text(chat_id=call.message.chat.id,message_id=call.message.message_id,text=messageRegestration,reply_markup=list_players_markup)
-                # print(list_users[0])
         elif GAME_STARTED == True:
             print("pyk pyk")
        
-
-
-
-
 @bot.message_handler(commands=['stop'])
 def stop_game(message):
     global REGESTRATION
@@ -162,10 +146,6 @@ def stop_game(message):
         bot.send_message(message.chat.id, "Game canceled")
     else:
         print("pyk pyk")
-
-# @bot.message_handler(func=lambda message:True)
-# def echo_message(message):
-    # bot.reply_to(message,"не викупив")
 
 bot.infinity_polling()
 
