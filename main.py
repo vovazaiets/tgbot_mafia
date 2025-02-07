@@ -25,7 +25,7 @@ def send_welcome(message):
         markup = types.InlineKeyboardMarkup()
         add_to_group_button = types.InlineKeyboardButton("🤖Додати бота в свій чат!",callback_data="addgroup",url=add_bot_url)
         markup.add(add_to_group_button)
-        bot.reply_to(message,"hi this is mafia bot",reply_markup=markup)
+        bot.reply_to(message,"Привіт я бот для гри в мафію🤖",reply_markup=markup)
     elif message.chat.type in ["group","supergroup"]:
         print(GAME_STARTED)
         bot.reply_to(message,"Привіт я бот для гри в мафію🤖")
@@ -60,7 +60,7 @@ def start_regestration(message):
             
             REGESTRATION = True
             list_players_markup = types.InlineKeyboardMarkup()
-            list_players_add = types.InlineKeyboardButton("Connect",callback_data="connectgame")
+            list_players_add = types.InlineKeyboardButton("Приєднатись до гри",callback_data="connectgame")
             list_players_markup.add(list_players_add)
             bot.send_message(message.chat.id,messageRegestration,reply_markup=list_players_markup)
             print(message.chat.id)
@@ -68,7 +68,7 @@ def start_regestration(message):
             timer_reg.start()
             update_timer(message, TimeRegestration)
         else:
-            bot.reply_to(message,"this is command use in groups")
+            bot.reply_to(message,"Цю команду можна використати тільки в групі!")
     elif REGESTRATION == True:
         bot.delete_message(message.chat.id, message.message_id)
 
@@ -83,9 +83,9 @@ def func_mafia(user_id,players_roles):
         user_info = bot.get_chat(player)
         button = types.InlineKeyboardButton(text=f"{user_info.first_name}",callback_data=f"kill_{player}")
         markup_mafia.add(button)
-    button_pass = types.InlineKeyboardButton(text="Pass kill",callback_data="pass_mafia_kill")
+    button_pass = types.InlineKeyboardButton(text="🏳️Утриматись",callback_data="pass_mafia_kill")
     markup_mafia.add(button_pass)
-    bot.send_message(user_id,f"You need select to kill:\n",reply_markup=markup_mafia)
+    bot.send_message(user_id,f"🔪Ти обрав жертву:\n",reply_markup=markup_mafia)
 
 
 def day(player):
@@ -97,13 +97,13 @@ def day(player):
         users_id.pop()
 
     if not users_id:
-        bot.send_message(chatonly_id,"GAME OVER,MAFIA WIN")
+        bot.send_message(chatonly_id,"Гра закінчилась\nПереможець: Мафія")
         GAME_STARTED = False
         REGESTRATION = False
     else:
         for player in users_id:
             list_live_user += f"{bot.get_chat(player).first_name}\n"
-        bot.send_message(chatonly_id,f"LAST LIVES:\n{list_live_user}")
+        bot.send_message(chatonly_id,f"Лишились в живих:\n\n{list_live_user}")
         func_mafia(player,players_roles)
 
 
@@ -135,7 +135,7 @@ def start_game(message):
         players_roles = dict(zip(list_roles,users_id))
         print(players_roles)
         for role,player in players_roles.items():
-            bot.send_message(player,f"You role is: {role}")
+            bot.send_message(player,f"Маєш файну роль: {role}")
             if role == "Mafia":
                 # send_message_by_id(player,"SELECT")
                 # bot.send_message(player,f"Select user to kill: \n\n hehe")
@@ -159,9 +159,9 @@ def callback_querry(call):
             print(call.from_user.id)
             id_user = call.from_user.id
             firstname = call.from_user.first_name
-            bot.send_message(id_user,"You join to game")
+            bot.send_message(id_user,"Ти приєднався до гри в мафію!")
             if id_user in users_id:
-                bot.send_message(id_user,"no no no chill bro,you in game")
+                bot.send_message(id_user,"Не треба так :)")
             else:
                 users_id.append(id_user)
                 global list_players_markup
@@ -171,7 +171,7 @@ def callback_querry(call):
         elif GAME_STARTED == True:
             print("pyk pyk")
     elif call.data == 'pass_mafia_kill':
-        bot.send_message(chatonly_id,"Mafia pass kill in this round")
+        bot.send_message(chatonly_id,"Мафія вирішила утриматись")
         day(0)
 
 @bot.message_handler(commands=['stop'])
@@ -183,7 +183,7 @@ def stop_game(message):
         users_id.clear()
         REGESTRATION = False
         list_players_markup = None
-        bot.send_message(message.chat.id,"Registation canceled")
+        bot.send_message(message.chat.id,"Реєстрацію скасовано")
     elif GAME_STARTED == False:
         messageRegestration = f"Починається реєстрація на гру\n"
         users_id.clear()
@@ -192,7 +192,7 @@ def stop_game(message):
         messageRegestration = f"Починається реєстрація на гру\n"
         users_id.clear()
         GAME_STARTED = False
-        bot.send_message(message.chat.id, "Game canceled")
+        bot.send_message(message.chat.id, "Гру скасовано")
     else:
         print("pyk pyk")
 
