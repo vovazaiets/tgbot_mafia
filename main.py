@@ -15,7 +15,8 @@ add_bot_url = f"https://t.me/{bot_username}?startgroup=true"
 bot = telebot.TeleBot(TOKEN)
 # list_users = {}
 users_id = []
-TimeRegestration = 20
+TimeRegestration = 180
+interval = 60
 list_roles = ["Mafia","Doctor","Normis"]
 random.shuffle(list_roles)
 
@@ -47,6 +48,16 @@ def update_message(message,first_name):
 messageRegestration = f"Починається реєстрація на гру\n"
 
 
+def update_timer(message, time_left):
+
+    bot.send_message(message.chat.id, f"⏳ До кінця реєстрації залишилось: {time_left} секунд.")
+
+    if time_left > 0:
+        threading.Timer(interval, update_timer, [message, time_left - interval]).start()
+    else:
+        start_game(message)  
+
+
 @bot.message_handler(commands=['game'])
 def start_regestration(message):
     global REGESTRATION
@@ -65,7 +76,8 @@ def start_regestration(message):
             bot.send_message(message.chat.id,messageRegestration,reply_markup=list_players_markup)
             timer_reg = threading.Timer(TimeRegestration,lambda: start_game(message))
             timer_reg.start()
-            bot.send_message(message.chat.id,f"До кінця реєстрації залишилось: {TimeRegestration} секунд")
+            #bot.send_message(message.chat.id,f"⏳Починається реєстрація на гру,залишилось: {TimeRegestration} секунд")
+            update_timer(message, TimeRegestration)
         else:
             bot.reply_to(message,"this is command use in groups")
     elif REGESTRATION == True:
@@ -132,17 +144,17 @@ def stop_game(message):
     global GAME_STARTED
     if REGESTRATION == True:
         messageRegestration = f"Починається реєстрація на гру\n"
-        list_users.clear()
+        users_id.clear()
         REGESTRATION = False
         list_players_markup = None
         bot.send_message(message.chat.id,"Registation canceled")
     elif GAME_STARTED == False:
         messageRegestration = f"Починається реєстрація на гру\n"
-        list_users.clear()
+        users_id.clear()
         bot.delete_message(message.chat.id, message.message_id)
     elif GAME_STARTED == True:
         messageRegestration = f"Починається реєстрація на гру\n"
-        list_users.clear()
+        users_id.clear()
         GAME_STARTED = False
         bot.send_message(message.chat.id, "Game canceled")
     else:
