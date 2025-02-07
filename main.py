@@ -49,11 +49,14 @@ messageRegestration = f"Починається реєстрація на гру\
 
 
 def update_timer(message, time_left):
-
-    bot.send_message(message.chat.id, f"⏳ До кінця реєстрації залишилось: {time_left} секунд.")
+    global GAME_STARTED
 
     if time_left > 0:
-        threading.Timer(interval, update_timer, [message, time_left - interval]).start()
+        if GAME_STARTED == False:
+            bot.send_message(message.chat.id, f"⏳ До кінця реєстрації залишилось: {time_left} секунд.")
+            threading.Timer(interval, update_timer, [message, time_left - interval]).start()
+        else:
+            print("pyk pyk")
     else:
         start_game(message)  
 
