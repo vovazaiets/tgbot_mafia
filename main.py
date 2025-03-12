@@ -127,7 +127,7 @@ def start_game(message):
     global GAME_STARTED
     global list_roles
     global users_id
-    if REGESTRATION == True:
+    if REGESTRATION:
         REGESTRATION = False
         GAME_STARTED = True
         print(GAME_STARTED)
@@ -178,17 +178,17 @@ def callback_querry(call):
 def stop_game(message):
     global REGESTRATION
     global GAME_STARTED
-    if REGESTRATION == True:
+    if REGESTRATION:
         messageRegestration = f"Починається реєстрація на гру\n"
         users_id.clear()
         REGESTRATION = False
         list_players_markup = None
         bot.send_message(message.chat.id,"Реєстрацію скасовано")
-    elif GAME_STARTED == False:
+    elif not GAME_STARTED:
         messageRegestration = f"Починається реєстрація на гру\n"
         users_id.clear()
         bot.delete_message(message.chat.id, message.message_id)
-    elif GAME_STARTED == True:
+    elif GAME_STARTED:
         messageRegestration = f"Починається реєстрація на гру\n"
         users_id.clear()
         GAME_STARTED = False
