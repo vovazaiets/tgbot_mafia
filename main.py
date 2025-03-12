@@ -18,7 +18,18 @@ class Game:
     REGISTRATION = False
     GAME_STARTED = False
     messageRegistration = f"Починається реєстрація на гру\n"
-    
+    def Change_status(reg=None,game_started=None):
+        if reg:
+            Game.REGISTRATION = True
+        elif game_started:
+            Game.GAME_STARTED = True
+        elif not game_started:
+            Game.GAME_STARTED = False
+        elif not reg:
+            Game.REGISTRATION = False
+        else:
+            pass
+        
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     if message.chat.type == 'private':
@@ -110,8 +121,9 @@ def start_game(message):
     global list_roles
     global users_id
     if Game.REGISTRATION:
-        Game.REGISTRATION = False
-        Game.GAME_STARTED = True
+        # Game.REGISTRATION = False
+        # Game.GAME_STARTED = True
+        Game.Change_status(1,0)
         random.shuffle(list_roles)
         players_roles = dict(zip(list_roles,users_id))
         print(players_roles)
