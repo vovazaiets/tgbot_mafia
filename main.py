@@ -2,9 +2,7 @@ import telebot
 from dotenv import load_dotenv
 import os
 from telebot import types
-import time
 import threading
-from types import SimpleNamespace
 import random
 from config import TimeRegestration,interval,list_roles,chatonly_id
 
@@ -175,4 +173,3 @@ def stop_game(message):
         print("pyk pyk")
 
 bot.infinity_polling()
-
